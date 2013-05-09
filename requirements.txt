@@ -1,0 +1,5 @@
+flask
+prettyexc
+cacheobj
+redis
+easyirc
