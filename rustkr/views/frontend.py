@@ -16,7 +16,7 @@ client = redis.Redis(db=7)
 
 def parse_data(data):
     strtime, nick, message = data.split(':', 2)
-    return float(strtime), nick, message.decode('utf-8')
+    return float(strtime), nick.decode('utf-8'), message.decode('utf-8')
 
 
 @frontend.route('/')
