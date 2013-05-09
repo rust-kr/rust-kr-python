@@ -42,6 +42,8 @@ def on_message(connection, sender, target, message):
     redisc.lpush(starget, redismsg)
     redisc.publish(starget + 'out', redismsg)
 
+starttime = str(int(time.time()))
+redisc.lpush(settings.CHANNEL, starttime + ':rust-kr.org:** 연결이 재시작되었습니다 **')
 client.start()
 
 client.interactive()
