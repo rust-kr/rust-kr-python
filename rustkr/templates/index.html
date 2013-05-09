@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block subtitle %}IRC{% endblock %}
+
+{% block content %}
+<div "content">
+<p>러스트 공식 사이트(영문): <a href="http://www.rust-lang.org/">rust-lang.org</a></p>
+<p>러스트 저장소: <a href="https://www.github.com/mozilla/rust">github.com/mozilla/rust</a> (<a href="http://ruststat.youknowone.org">통계</a>) / Servo 저장소: <a href="https://www.github.com/mozilla/servo">github.com/mozilla/servo</a> (<a href="http://servostat.youknowone.org">통계</a>)</p>
+<p>러스트(<span lang="en">Rust</span>)는 모질라(<a href="https://www.mozilla.org/">mozilla.org</a>)에서 개발하는 메모리-안전하고 병렬 프로그래밍이 쉬운 차세대 프로그래밍 언어입니다. 소스코드는 공개되어 개발 중이고, 아직 많은 기능이 구현 중인 개발 단계의 언어입니다.</p>
+<p>한국 러스트 사용자 그룹은 러스트를 사용하거나 러스트 개발에 참여하고 있는 사용자 그룹입니다. 현재는 작은 규모이고 대부분 <a href="http://ko.wikipedia.org/wiki/IRC">IRC</a>를 이용하고 있습니다. 아래 대화창을 이용하여 지금 대화에 참가해 보세요! 궁금한 점을 물어보셔도 좋고 하고 싶은 이야기를 하셔도 좋습니다. 사생활 보호를 위해 웹 채팅에서는 단순한 대화 기능만 제공되므로, 채널에 직접 참가하시려면 IRC 클라이언트(<a href="http://hexchat.org/downloads.html">hexchat, 윈도</a> / <a href="http://itunes.apple.com/app/id447521961">XChat Azure, 맥</a> / <a href="http://xchat.org/download/">XChat, 리눅스</a>)를 설치하고 <a href="irc://irc.ozinger.org/#rust">irc://irc.ozinger.org/#rust</a>로 접속하셔도 좋습니다. 찾아오신 것을 환영합니다!</p>
+<ul id="log">
+{% for log in logs %}
+<li>&lt;{{ log[1] }}&gt; {{ log[2] }}</li>
+{% else %}
+<li>** No saved log **</li>
+{% endfor %}
+</ul>
+<div><p>Nick:<input type="text" name="nick" size="16" value="{{ randnick }}" /> Text:<input type="text" name="text" size="80" /><a href="#" onclick="javacript:send()">SEND</a>
+</div>
+<script type="text/javascript" language="javacript"><!--
+var textinput = $('input[name=text]');
+textinput.keypress(function(e) {
+  if (e.keyCode == 13) {
+    return send();
+  }
+});
+
+var lasttime = {{ lasttime }};
+function update() {
+  $.post('/api/update', {time: lasttime}).done(function(data) {
+    var items = eval(data);
+    for (var index in items) {
+	  var logbox = $('ul#log');
+	  lasttime = items[index][0];
+	  logbox.html(logbox.html() + '<li>&lt;' + items[index][1] + '&gt; ' + items[index][2] + '</li>');
+    }
+    update();
+  });
+}
+update();
+
+function send() {
+  var nick = $('input[name=nick]').val();
+  var text = textinput.val();
+  if (text.length) {
+	$.post('/api/send', {nick: nick, text: text}).done(function(data) {
+	  textinput.val('');
+	});
+  }
+}
+--></script>
+{% endblock %}
