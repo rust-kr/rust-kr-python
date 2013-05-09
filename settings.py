@@ -7,6 +7,8 @@ SECRET_KEY = '7_Mk_/^6!//`cuG%`+\\8=/ZE3.(BbAa5'
 
 DEBUG = True
 
+CHANNEL = '#rust'
+
 CONNECTIONS = [
     {
         'name': 'rustkr',

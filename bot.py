@@ -1,5 +1,6 @@
 
 # -*- coding: utf-8 -*-
+import time
 import threading
 import redis
 
@@ -21,7 +22,7 @@ class Listener(threading.Thread):
             if item['type'] == 'subscribe': continue
             if item['type'] == 'message':
                 chan = item['channel'][:-2]
-                sender, message = item['data'].split(':', 1)
+                strtime, sender, message = item['data'].split(':', 2)
                 ircmsg = '<{sender}> {message}'.format(sender=sender, message=message)
                 client.privmsg(chan, ircmsg.decode('utf-8'))
 
@@ -36,7 +37,7 @@ def on_message(connection, sender, target, message):
     if target[0] != '#': return
     identity = util.parseid(sender)
     masked = '*' * len(identity.nick)
-    redismsg = ':'.join((masked, message.decode('utf-8')))
+    redismsg = ':'.join((str(int(time.time())), masked, message.encode('utf-8')))
     starget = target.decode('utf-8')
     redisc.lpush(starget, redismsg)
     redisc.publish(starget + 'out', redismsg)
