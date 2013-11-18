@@ -27,12 +27,12 @@ textinput.keypress(function(e) {
 
 var lasttime = {{ lasttime }};
 function update() {
-  $.post('/api/update', {time: lasttime}).done(function(data) {
+  $.post('/api/update', {time: lasttime}, null, 'jsonp').done(function(data) {
     var items = eval(data);
     for (var index in items) {
 	  var logbox = $('ul#log');
 	  lasttime = items[index][0];
-	  logbox.html(logbox.html() + '<li>&lt;' + items[index][1] + '&gt; ' + items[index][2] + '</li>');
+	  $('<li/>').text('<' + items[index][1] + '> ' + items[index][2]).appendTo(logbox);
     }
     update();
   });
