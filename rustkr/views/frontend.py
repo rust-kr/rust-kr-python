@@ -4,7 +4,8 @@ import time
 import json
 import redis
 import flask
-from flask import Module
+from functools import wraps
+from flask import Module, request, current_app
 
 from ..models.log import Subscriber
 
@@ -18,6 +19,20 @@ def parse_data(data):
     strtime, nick, message = data.split(':', 2)
     return float(strtime), nick.decode('utf-8'), message.decode('utf-8')
 
+def jsonp(func): # http://flask.pocoo.org/snippets/79/
+    """Wraps JSONified output for JSONP requests."""
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        callback = request.args.get('callback', False)
+        if callback and all(c=='_' or 'a'<=c<='z' or '0'<=c<='9' for c in callback.lower()) and not callback[0].isdigit():
+            data = str(func(*args, **kwargs))
+            content = str(callback) + '(' + data + ')'
+            mimetype = 'application/javascript'
+            return current_app.response_class(content, mimetype=mimetype)
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
+
 
 @frontend.route('/')
 def index():
@@ -30,7 +45,8 @@ def index():
     nick = 'web%04d' % random.choice(range(0,1000))
     return flask.render_template('index.html', logs=data, randnick=nick, lasttime=lasttime)
 
-@frontend.route('/api/update', methods=['POST'])
+@frontend.route('/api/update', methods=['GET', 'POST'])
+@jsonp
 def update():
     try:
         strtime = flask.request.values['time']
