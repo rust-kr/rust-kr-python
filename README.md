@@ -1,6 +1,9 @@
 rust-kr
 =======
 
-Visit us: [rust-kr.org][0]
+rust-kr website is now run by [rust-kr-rust][1].
 
-[0]: http://rust-kr.org
+rust-kr is now only used for web chat API. You still can visit: [python.rust-kr.org][0]
+
+[0]: http://python.rust-kr.org
+[1]: http://rust.rust-kr.org
