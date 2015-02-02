@@ -2,4 +2,4 @@ flask
 prettyexc
 cacheobj
 redis
-easyirc
+easyirc>=0.1.1
