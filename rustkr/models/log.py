@@ -19,4 +19,4 @@ class Subscriber(threading.Thread):
             if message and message['type'] != 'subscribe':
                 self.result = message['data']
                 break
-            time.sleep(0.001)
+            time.sleep(0.1)
