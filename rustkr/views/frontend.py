@@ -63,12 +63,11 @@ def update():
     if len(new) == 0:
         subscriber = Subscriber(client)
         subscriber.start()
-        for x in xrange(0, 300):
-            time.sleep(1)
-            if subscriber.result is not None:
-                print subscriber.result
-                new.append(parse_data(subscriber.result))
-                break
+        subscriber.join(10)
+        subscriber.keep_going = False # weed the thread out
+        if subscriber.result is not None:
+            print subscriber.result
+            new.append(parse_data(subscriber.result))
 
     return json.dumps(new)
 
