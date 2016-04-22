@@ -8,6 +8,8 @@ from easyirc.client.bot import BotClient
 from easyirc.const import *
 from easyirc import util, settings
 
+import settings as bot_settings
+
 connopt = settings.connections.values()[0]
 
 redisc = redis.Redis(db=7)
@@ -32,11 +34,17 @@ bglistener.start()
 
 client = BotClient()
 
+def mask(nick):
+    for white in bot_settings.NICK_WHITELIST:
+        if nick.startswith(white):
+            return nick.encode('utf-8')
+    return '*' * len(nick)
+
 @client.events.hookmsg(PRIVMSG)
 def on_message(connection, sender, target, message):
     if target[0] != '#': return
     identity = util.parseid(sender)
-    masked = '*' * len(identity.nick)
+    masked = mask(identity.nick)
     redismsg = ':'.join((str(int(time.time())), masked, message.encode('utf-8')))
     starget = target.decode('utf-8')
     redisc.lpush(starget, redismsg)
